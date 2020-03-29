@@ -5,13 +5,13 @@ import * as THREE from 'three'
 function createTranslateArray(shape, size) {
   const array = new Float32Array(3*size);
   for (let i = 0; i < size; i++) {
-    array[i*3] = Math.random() * 2 - 1;
+    array[i*3] = Math.random() * 20 - 10;
 
     if (shape !== 'line')
-      array[i*3+2] = Math.random() * 2 - 1;
+      array[i*3+2] = Math.random() * 20 - 10;
 
     if (shape === 'cloud')
-      array[i*3+1] = Math.random() * 2 - 1;
+      array[i*3+1] = Math.random() * 20 - 10;
   }
 
   return array;

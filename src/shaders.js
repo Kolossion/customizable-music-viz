@@ -1,8 +1,8 @@
-export function vertex_shader(func = default_func) {
-  return pre_vertex_shader + func + post_vertex_shader
-}
+export const DEFAULT_F = 'rho() / 1.5'
+export const DEFAULT_FUNC =
+  `2.0*f*sign(cos(4.*theta() + time + 2.*cos(10.*rho())))`
 
-const pre_vertex_shader =
+export const vertex_shader = (f=DEFAULT_F, func=DEFAULT_FUNC) => (
   `precision highp float;
   uniform mat4 modelViewMatrix;
   uniform mat4 projectionMatrix;
@@ -26,14 +26,8 @@ const pre_vertex_shader =
   }
   void main() {
     float g = texture2D( tAudioData, vec2(0.1, 0.0) ).r;
-    float f = texture2D( tAudioData, vec2(rho() / 1.5, 0.0) ).r;
-    float scale = `
-
-const default_func =
-  `2.0*f*sign(cos(4.*theta() + time + 2.*cos(10.*rho())))`
-
-const post_vertex_shader =
-  `;
+    float f = texture2D( tAudioData, vec2(${f}, 0.0) ).r;
+    float scale = ${func};
     scale /= 100.0;
     vScale = scale;
     vec3 vTranslate = translate;
@@ -45,9 +39,9 @@ const post_vertex_shader =
     vRho = rho();
     gl_Position = projectionMatrix * mvPosition;
   }
-  `
+  `)
 
-export const fragment_shader =
+export const fragment_shader = () => (
   `
   precision highp float;
   uniform sampler2D map;
@@ -75,4 +69,4 @@ export const fragment_shader =
     gl_FragColor = vec4( diffuseColor.xyz * HSLtoRGB(vec3((vRho/8. + 2.*vScale) * 10.0, 1.0, 0.5)), diffuseColor.w );
     if ( diffuseColor.w < 0.5 ) discard;
   }
-  `
+  `)
