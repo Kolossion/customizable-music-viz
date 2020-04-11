@@ -1,6 +1,5 @@
-export const DEFAULT_F = 'rho() / 1.5'
-export const DEFAULT_FUNC =
-  `2.0*f*sign(cos(4.*theta() + time + 2.*cos(10.*rho())))`
+export const DEFAULT_F = 'rho / 1.5'
+export const DEFAULT_FUNC = `2.0*sin(cos(4.*theta + time + 2.*cos(10.*rho)))`
 
 export const vertex_shader = (f=DEFAULT_F, func=DEFAULT_FUNC) => (
   `precision highp float;
@@ -15,17 +14,14 @@ export const vertex_shader = (f=DEFAULT_F, func=DEFAULT_FUNC) => (
   varying float vScale;
   varying float vTime;
   varying float vRho;
-  float rho() {
-    return sqrt(translate.x * translate.x + translate.y * translate.y + translate.z * translate.z);
-  }
-  float theta() {
-    return atan(translate.x, translate.z);
-  }
-  float r() {
-    return sqrt(translate.x * translate.x + translate.y * translate.y);
-  }
   void main() {
-    float g = texture2D( tAudioData, vec2(0.1, 0.0) ).r;
+    float x = translate.x;
+    float y = translate.y;
+    float z = translate.z;
+    float r = sqrt(x * x + y * y);
+    float rho = sqrt(r * r + z * z);
+    float theta = atan(x, y);
+    float phi = atan(r, z);
     float f = texture2D( tAudioData, vec2(${f}, 0.0) ).r;
     float scale = ${func};
     scale /= 100.0;
@@ -36,7 +32,7 @@ export const vertex_shader = (f=DEFAULT_F, func=DEFAULT_FUNC) => (
     mvPosition.xyz += position * scale;
     vUv = uv;
     vTime = time;
-    vRho = rho();
+    vRho = rho;
     gl_Position = projectionMatrix * mvPosition;
   }
   `)
@@ -70,3 +66,40 @@ export const fragment_shader = () => (
     if ( diffuseColor.w < 0.5 ) discard;
   }
   `)
+
+export const vertex_shader_plain = () => (
+  `
+  varying vec2 vUv;
+
+  void main() {
+    vUv = 2.0*uv - vec2(1.0, 1.0);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+  `
+)
+
+  export const fragment_shader_2D = (f, func) => (
+`
+  precision highp float;
+  uniform vec3 position;
+  uniform float time;
+  uniform sampler2D tAudioData;
+  varying vec2 vUv;
+
+  void main() {
+    float x = vUv.x;
+    float y = vUv.y;
+    float z = 0.0;
+    float r = sqrt(x * x + y * y);
+    float rho = r;
+    float theta = atan(x, y);
+    float f = texture2D( tAudioData, vec2(${f}, 0.0) ).r;
+    float scale = ${func};
+    if(scale > 0.0) {
+      gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    } else {
+      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    }
+  }`
+)
+
