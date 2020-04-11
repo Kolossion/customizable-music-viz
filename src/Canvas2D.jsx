@@ -1,10 +1,12 @@
-import React, { useRef, useMemo } from 'react'
+import React, { useRef, useMemo, useEffect } from 'react'
 import { useFrame, useThree } from 'react-three-fiber'
 import { Canvas } from 'react-three-fiber'
 import Plane from './Plane'
 import * as THREE from 'three'
 
 export default function Canvas2D(props) {
+  
+
   return (
     <Canvas {...props}
             orthographic={ true }

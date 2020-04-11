@@ -1,8 +1,7 @@
-import React, { useRef, useMemo } from 'react'
+import React, { useRef, useMemo, useEffect } from 'react'
 import { useFrame, useThree } from 'react-three-fiber'
 import * as THREE from 'three'
 import { vertex_shader_plain, fragment_shader_2D } from './shaders'
-import { WebGLRenderTarget } from 'three'
 
 export default function Plane(props) {
   const mesh = useRef()
@@ -15,17 +14,39 @@ export default function Plane(props) {
   camera.updateProjectionMatrix();
   gl.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1);
 
+  useEffect(() => {
+    const keyDownHandler = (e) => {
+      if (e.key === "R" && e.shiftKey) {
+        const startSize = gl.getSize()
+        console.log(startSize)
+        gl.setSize(props.screenshotSize, props.screenshotSize)
+        gl.render(scene, camera)
+        window.open( gl.domElement.toDataURL( 'image/png' ), 'screenshot' );
+        gl.setSize(startSize.x, startSize.y)
+        props.screenshotCallback(false)
+      }
+    }
+
+    document.addEventListener("keydown", keyDownHandler)
+
+    return () => {
+      document.removeEventListener("keydown", keyDownHandler)
+    }
+  }, [camera, gl, props, scene])
 
   useFrame((state) => {
     props.stats.update()
-    if (Math.random() < 1.0) return
+    // if (Math.random() < 1.0) return
 
-    const startSize = gl.getSize()
-    console.log(startSize)
-    gl.setSize(6000, 6000)
-    gl.render(scene, camera)
-    window.open( gl.domElement.toDataURL( 'image/png' ), 'screenshot' );
-    gl.setSize(startSize.x, startSize.y)
+    // if (props.takeScreenshot) {
+    //   const startSize = gl.getSize()
+    //   console.log(startSize)
+    //   gl.setSize(6000, 6000)
+    //   gl.render(scene, camera)
+    //   window.open( gl.domElement.toDataURL( 'image/png' ), 'screenshot' );
+    //   gl.setSize(startSize.x, startSize.y)
+    //   props.screenshotCallback(false)
+    // }
   })
 
   const [amplitudeArray, analyserNode, audioTexture] = useMemo((fftSize = Math.pow(2, 14)) => {
@@ -36,7 +57,7 @@ export default function Plane(props) {
     const texture = new THREE.DataTexture(amplitudeArray, fftSize / 2, 1, THREE.LuminanceFormat );
 
     return [amplitudeArray, analyserNode, texture];
-  }, [props.audioCtx, props.fft, props.track])
+  }, [props.audioCtx, props.track])
 
   useFrame((state) => {
     analyserNode.getByteFrequencyData(amplitudeArray);
@@ -45,7 +66,9 @@ export default function Plane(props) {
   })
 
   return (
-    <mesh ref={mesh}>
+    <mesh
+      ref={mesh}
+    >
       <planeGeometry attach="geometry" />
       <shaderMaterial attach="material" args={[{
         vertexShader: vertex_shader_plain(),
