@@ -5,13 +5,13 @@ import * as THREE from 'three'
 function createTranslateArray(shape, size) {
   const array = new Float32Array(3*size);
   for (let i = 0; i < size; i++) {
-    array[i*3] = Math.random() * 20 - 10;
+    array[i*3] = Math.random() * 40 - 20;
 
     if (shape !== 'line')
-      array[i*3+2] = Math.random() * 20 - 10;
+      array[i*3+2] = Math.random() * 40 - 20;
 
     if (shape === 'cloud')
-      array[i*3+1] = Math.random() * 20 - 10;
+      array[i*3+1] = Math.random() * 40 - 20;
   }
 
   return array;
@@ -46,6 +46,7 @@ export default function Cloud(props) {
   }, [props.shape, props.particleCount]);
 
   useFrame((state) => {
+    props.stats.update()
     analyserNode.getByteFrequencyData(amplitudeArray);
     mesh.current.material.uniforms.tAudioData.value.needsUpdate = true;
     mesh.current.material.uniforms.time.value = state.clock.getElapsedTime();
