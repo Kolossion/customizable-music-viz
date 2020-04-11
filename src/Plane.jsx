@@ -20,10 +20,12 @@ export default function Plane(props) {
         const startSize = gl.getSize()
         console.log(startSize)
         gl.setSize(props.screenshotSize, props.screenshotSize)
+
+        gl.setPixelRatio(1);
         gl.render(scene, camera)
         window.open( gl.domElement.toDataURL( 'image/png' ), 'screenshot' );
         gl.setSize(startSize.x, startSize.y)
-        props.screenshotCallback(false)
+        gl.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1);
       }
     }
 
