@@ -10,6 +10,7 @@ import 'rc-slider/assets/index.css'
 
 export default function FunctionViewer(props) {
   const [shaderFunc, setShaderFunc] = useState(DEFAULT_FUNC)
+  const [show3D, setShow3D] = useState(true)
   const [f, setF] = useState(DEFAULT_F)
   const [highPerformance, setHighPerformance] = useState(false)
   const [numParticles, setNumParticles] = useState(1000)
@@ -31,6 +32,13 @@ export default function FunctionViewer(props) {
     setNumParticles(Math.round(Math.pow(10_000_000, val)))
   }
 
+  const setShow3DToggle = (e) => {
+    console.log("BLAH")
+    setShow3D(e.target.checked)
+  }
+
+  const CanvasFunc = show3D ? Canvas3D : Canvas2D
+
   return (
     <>
       <div className={"sidebar " + (!sidebarOpen ? "hidden" : "")}>
@@ -49,10 +57,10 @@ export default function FunctionViewer(props) {
         <div style={{ width: '100%', padding: '10px'}}>
           <Slider id="num-particles" name="num-particles" onChange={changeParticleCount} min={0.5} max={1} step={1/1000}/>
         </div>
-        <label for="high-performance">High Performance: </label>
-        <input id="high-performance" value={highPerformance} type="checkbox" onChange={setHighPerformance} />
+        <label for="canvas-switch">3D Canvas: </label>
+        <input id="canvas-switch" checked={show3D} type="checkbox" onChange={setShow3DToggle} />
       </div>
-      <Canvas2D
+      <CanvasFunc
         {...props}
         f={f}
         stats={stats}

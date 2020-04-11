@@ -81,7 +81,7 @@ export const vertex_shader_plain = () => (
   export const fragment_shader_2D = (f, func) => (
 `
   precision highp float;
-  uniform vec3 position;
+  uniform vec3 uPosition;
   uniform float time;
   uniform sampler2D tAudioData;
   varying vec2 vUv;
