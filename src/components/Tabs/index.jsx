@@ -11,7 +11,6 @@ function Tabs(props) {
 
 
   const tabs = props.labels.map((label) => {
-    console.log("LABEL", label)
    return (
     <div 
       className={[styles.tab, (label == props.value ? styles.active : "")].join(' ')}

@@ -1,18 +1,22 @@
 import React, { useRef, useMemo, useState } from 'react';
 import Slider from 'rc-slider'
 import Stats from 'three/examples/jsm/libs/stats.module'
+import { SketchPicker } from 'react-color'
 import { DEFAULT_FUNC, DEFAULT_F} from './shaders'
 import { ArrowLeft, ArrowRight } from 'react-feather'
 import Canvas3D from './Canvas3D'
 import Canvas2D from './Canvas2D'
 import Tabs from './components/Tabs'
 import 'rc-slider/assets/index.css'
+import ColorPicker from './components/ColorPicker';
 
 export default function FunctionViewer(props) {
   // const { gl } = useThree() 
   const [shaderFunc, setShaderFunc] = useState(DEFAULT_FUNC)
   const [canvasState, setCanvasState] = useState("2D")
   const [screenshotSize, setScreenshotSize] = useState(5000)
+  const [posColorVal, setPosColorVal] = useState({r: 255, g: 255, b: 255, a: 1})
+  const [negColorVal, setNegColorVal] = useState({r: 0, g: 0, b: 0, a: 1})
   const [f, setF] = useState(DEFAULT_F)
   // const [highPerformance, setHighPerformance] = useState(false)
   const [numParticles, setNumParticles] = useState(1000)
@@ -63,7 +67,17 @@ export default function FunctionViewer(props) {
           </> :
           <>
             <label for="screenshot-size">Screenshot Size</label>
-            <input id="screenshot-size" type="number" value={screenshotSize} />
+            <input id="screenshot-size" type="number" value={screenshotSize} onChange={(e) => setScreenshotSize(e.target.value)} />
+            <ColorPicker
+              value={posColorVal}
+              onChange={(e) => setPosColorVal(e.rgb)}
+              label="Positive Color"
+            />
+            <ColorPicker
+              value={negColorVal}
+              onChange={(e) => setNegColorVal(e.rgb)}
+              label="Negative Color"
+            />
             <p>Press <b>Shift + R</b> to capture the canvas as an image.</p>
           </>
         }
@@ -73,6 +87,10 @@ export default function FunctionViewer(props) {
       <CanvasFunc
         {...props}
         f={f}
+        colors={{
+          posColor: posColorVal,
+          negColor: negColorVal
+        }}
         stats={stats}
         screenshotSize={screenshotSize}
         shaderFunc={shaderFunc}

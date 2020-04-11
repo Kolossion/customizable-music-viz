@@ -78,7 +78,7 @@ export const vertex_shader_plain = () => (
   `
 )
 
-  export const fragment_shader_2D = (f, func) => (
+  export const fragment_shader_2D = (f, func, posColor, negColor) => (
 `
   precision highp float;
   uniform vec3 uPosition;
@@ -96,9 +96,9 @@ export const vertex_shader_plain = () => (
     float f = texture2D( tAudioData, vec2(${f}, 0.0) ).r;
     float scale = ${func};
     if(scale > 0.0) {
-      gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+      gl_FragColor = ${posColor};
     } else {
-      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+      gl_FragColor = ${negColor};
     }
   }`
 )

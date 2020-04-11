@@ -67,6 +67,11 @@ export default function Plane(props) {
     mesh.current.material.uniforms.time.value = state.clock.getElapsedTime();
   })
 
+  const convertToShaderColor = (color) => {
+    const { r, g, b } = color
+    return `vec4(${r / 255}, ${g / 255}, ${b / 255}, 1.0)`
+  }
+
   return (
     <mesh
       ref={mesh}
@@ -74,7 +79,12 @@ export default function Plane(props) {
       <planeGeometry attach="geometry" />
       <shaderMaterial attach="material" args={[{
         vertexShader: vertex_shader_plain(),
-        fragmentShader: fragment_shader_2D(props.f, props.shaderFunc),
+        fragmentShader: fragment_shader_2D(
+          props.f,
+          props.shaderFunc,
+          convertToShaderColor(props.colors.posColor),
+          convertToShaderColor(props.colors.negColor)
+        ),
         uniforms: {
           time: {value: 0.0},
           position: {value: [0.0, 0.0, 0.0]},
