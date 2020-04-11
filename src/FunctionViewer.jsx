@@ -7,6 +7,7 @@ import { ArrowLeft, ArrowRight } from 'react-feather'
 import Canvas3D from './Canvas3D'
 import Canvas2D from './Canvas2D'
 import Tabs from './components/Tabs'
+import { rgbToCSS } from './lib/helpers'
 import 'rc-slider/assets/index.css'
 import ColorPicker from './components/ColorPicker';
 
@@ -47,7 +48,7 @@ export default function FunctionViewer(props) {
     <>
       <div className={"sidebar " + (!sidebarOpen ? "hidden" : "")}>
         <h2>Customize Visualizer</h2>
-        <Tabs onChange={setCanvasState} labels={['3D', '2D']} value={canvasState} />
+        <Tabs highlightColor={posColorVal} onChange={setCanvasState} labels={['3D', '2D']} value={canvasState} />
         <div className="drawer-button" onClick={() => setSidebarOpen(!sidebarOpen)}>
           { sidebarOpen ?
             <ArrowRight color="#ffffff"/> :
