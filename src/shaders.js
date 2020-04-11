@@ -1,5 +1,7 @@
 export const DEFAULT_F = 'rho / 1.5'
-export const DEFAULT_FUNC = `2.0*sin(cos(4.*theta + time + 2.*cos(10.*rho)))`
+export const DEFAULT_FUNC = `2*sin(cos(4*theta + time + 2*cos(10*rho)))`
+
+const shaderify = (func) => (func.replace(/((^|[^\da-z.])\d+)(?![a-z.\d])/gi, "$1."))
 
 export const vertex_shader = (f=DEFAULT_F, func=DEFAULT_FUNC) => (
   `precision highp float;
@@ -22,8 +24,8 @@ export const vertex_shader = (f=DEFAULT_F, func=DEFAULT_FUNC) => (
     float rho = sqrt(r * r + z * z);
     float theta = atan(x, y);
     float phi = atan(r, z);
-    float f = texture2D( tAudioData, vec2(${f}, 0.0) ).r;
-    float scale = ${func};
+    float f = texture2D( tAudioData, vec2(${shaderify(f)}, 0.0) ).r;
+    float scale = ${shaderify(func)};
     scale /= 100.0;
     vScale = scale;
     vec3 vTranslate = translate;
@@ -92,9 +94,9 @@ export const vertex_shader_plain = () => (
     float z = 0.0;
     float r = sqrt(x * x + y * y);
     float rho = r;
-    float theta = atan(x, y);
-    float f = texture2D( tAudioData, vec2(${f}, 0.0) ).r;
-    float scale = ${func};
+    float theta = atan(y, x);
+    float f = texture2D( tAudioData, vec2(${shaderify(f)}, 0.0) ).r;
+    float scale = ${shaderify(func)};
     if(scale > 0.0) {
       gl_FragColor = ${posColor};
     } else {
