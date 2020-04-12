@@ -1,9 +1,10 @@
-import React, { useRef, useMemo, useEffect } from 'react'
+import React, { useRef, useMemo, useEffect, useState } from 'react'
 import { useFrame, useThree } from 'react-three-fiber'
 import * as THREE from 'three'
 import { vertex_shader_plain, fragment_shader_2D } from './shaders'
 
 export default function Plane(props) {
+  const [zoom, setZoom] = useState(0)
   const mesh = useRef()
   const { gl, scene, camera } = useThree()
 
@@ -29,26 +30,22 @@ export default function Plane(props) {
       }
     }
 
+    const wheelHandler = (e) => {
+      setZoom(zoom + e.deltaY / 100)
+    }
+
     document.addEventListener("keydown", keyDownHandler)
+    document.addEventListener("wheel", wheelHandler)
 
     return () => {
       document.removeEventListener("keydown", keyDownHandler)
+      document.removeEventListener("wheel", wheelHandler)
     }
-  }, [camera, gl, props, scene])
+  }, [camera, gl, props, scene, zoom])
 
   useFrame((state) => {
+    console.log(zoom)
     props.stats.update()
-    // if (Math.random() < 1.0) return
-
-    // if (props.takeScreenshot) {
-    //   const startSize = gl.getSize()
-    //   console.log(startSize)
-    //   gl.setSize(6000, 6000)
-    //   gl.render(scene, camera)
-    //   window.open( gl.domElement.toDataURL( 'image/png' ), 'screenshot' );
-    //   gl.setSize(startSize.x, startSize.y)
-    //   props.screenshotCallback(false)
-    // }
   })
 
   const [amplitudeArray, analyserNode, audioTexture] = useMemo((fftSize = Math.pow(2, 14)) => {
@@ -88,7 +85,8 @@ export default function Plane(props) {
         uniforms: {
           time: {value: 0.0},
           position: {value: [0.0, 0.0, 0.0]},
-          tAudioData: {value: audioTexture}
+          tAudioData: {value: audioTexture},
+          zoom: {value: zoom}
         }
       }]} />
     </mesh>
