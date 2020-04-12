@@ -72,9 +72,11 @@ export const fragment_shader = () => (
 export const vertex_shader_plain = () => (
   `
   varying vec2 vUv;
+  uniform float zoom;
 
   void main() {
-    vUv = 2.0*uv - vec2(1.0, 1.0);
+    float zoompow = pow(1.03, zoom);
+    vUv = 2.0*zoompow*uv - vec2(zoompow, zoompow);
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
   `
