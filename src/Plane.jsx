@@ -2,6 +2,7 @@ import React, { useRef, useMemo, useEffect, useState } from 'react'
 import { useFrame, useThree } from 'react-three-fiber'
 import * as THREE from 'three'
 import { vertex_shader_plain, fragment_shader_2D } from './shaders'
+var JSZip = require("jszip");
 
 export default function Plane(props) {
   const [zoom, setZoom] = useState(0)
@@ -17,17 +18,62 @@ export default function Plane(props) {
 
   useEffect(() => {
     const keyDownHandler = (e) => {
-      if (e.key === "R" && e.shiftKey) {
-        const startSize = gl.getSize()
-        console.log(startSize)
-        gl.setSize(props.screenshotSize, props.screenshotSize)
+      if (e.key !== "R") return
 
-        gl.setPixelRatio(1);
-        gl.render(scene, camera)
-        window.open( gl.domElement.toDataURL( 'image/png' ), 'screenshot' );
-        gl.setSize(startSize.x, startSize.y)
-        gl.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1);
+      if (false) {
+        return screenshotInDataUrl()
+      } else {
+        return screenshotInZip()
       }
+    }
+
+    const screenshotInDataUrl = () => {
+      gl.setPixelRatio(1)
+      gl.setSize(props.screenshotSize, props.screenshotSize)
+      gl.render(scene, camera)
+
+      window.open(gl.domElement.toDataURL( 'image/png' ), 'screenshot')
+
+      gl.setRenderTarget(null)
+      gl.setSize(window.innerWidth, window.innerHeight)
+      gl.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1);
+    }
+
+    const screenshotInZip = () => {
+      gl.setPixelRatio(1)
+      window.gl = gl
+
+      const zip = new JSZip()
+
+      let a = document.createElement("a")
+      a.style.display = "none"
+      document.body.appendChild(a)
+      a.setAttribute("download", "filename.zip")
+
+      const segments = Math.ceil(props.screenshotSize / 5000)
+      const total = Math.pow(segments, 2)
+      console.log(`total is ${total}`)
+
+      gl.setSize(5000, 5000)
+      gl.setPixelRatio(1)
+
+      for (let i = 0; i < total; i++) {
+        camera.setViewOffset(segments, segments, i % segments, Math.floor(i / segments), 1, 1)
+        gl.render(scene, camera)
+        const string = gl.domElement.toDataURL('image/png').slice(22)
+        console.log(`Rendered ${i} of ${total} slices`)
+        zip.file(`${i}.png`, string, {base64: true})
+      }
+
+      zip.generateAsync({type: "blob"}).then(function (blob) {
+        a.href = URL.createObjectURL(blob, {type: 'application/zip'})
+        a.click()
+      })
+
+      camera.clearViewOffset()
+      gl.setRenderTarget(null)
+      gl.setSize(window.innerWidth, window.innerHeight)
+      gl.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1);
     }
 
     const wheelHandler = (e) => {
@@ -44,7 +90,6 @@ export default function Plane(props) {
   }, [camera, gl, props, scene, zoom])
 
   useFrame((state) => {
-    console.log(zoom)
     props.stats.update()
   })
 

@@ -1,6 +1,7 @@
 export const DEFAULT_F = 'rho / 1.5'
 export const DEFAULT_FUNC = `2*sin(cos(4*theta + time + 2*cos(10*rho)))`
 
+// Add decimal points to the end of all integers
 const shaderify = (func) => (func.replace(/((^|[^\da-z.])\d+)(?![a-z.\d])/gi, "$1."))
 
 export const vertex_shader = (f=DEFAULT_F, func=DEFAULT_FUNC) => (

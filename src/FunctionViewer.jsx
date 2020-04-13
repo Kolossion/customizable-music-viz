@@ -19,7 +19,7 @@ export default function FunctionViewer(props) {
   const [posColorVal, setPosColorVal] = useState({r: 255, g: 255, b: 255, a: 1})
   const [negColorVal, setNegColorVal] = useState({r: 0, g: 0, b: 0, a: 1})
   const [f, setF] = useState(DEFAULT_F)
-  // const [highPerformance, setHighPerformance] = useState(false)
+  const [highPerformance, setHighPerformance] = useState(true)
   const [numParticles, setNumParticles] = useState(1000)
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
@@ -96,7 +96,7 @@ export default function FunctionViewer(props) {
         screenshotSize={screenshotSize}
         shaderFunc={shaderFunc}
         numParticles={numParticles}
-        // highPerformance={highPerformance}
+        highPerformance={highPerformance}
       />
     </>
   )
