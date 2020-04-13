@@ -84,3 +84,29 @@ audio {
 .sidebar.hidden {
   right: -400px;
 }
+
+.sidebar button {
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+button {
+  border: 0;
+  height: 30px;
+  border-radius: 5px;
+  background-color: #555;
+  color: white;
+  font-family: 'Lato', sans-serif;
+  font-size: 16px;
+  transition: 0.2s all;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #666;
+}
+
+button:active {
+  color: #ccc;
+  background-color: #666;
+}

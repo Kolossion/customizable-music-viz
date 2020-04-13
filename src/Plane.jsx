@@ -2,7 +2,7 @@ import React, { useRef, useMemo, useEffect, useState } from 'react'
 import { useFrame, useThree } from 'react-three-fiber'
 import * as THREE from 'three'
 import { vertex_shader_plain, fragment_shader_2D } from './shaders'
-var JSZip = require("jszip");
+import JSZip from 'jszip'
 
 export default function Plane(props) {
   const [zoom, setZoom] = useState(0)
@@ -56,6 +56,8 @@ export default function Plane(props) {
 
       gl.setSize(5000, 5000)
       gl.setPixelRatio(1)
+
+      console.log("GL", gl)
 
       for (let i = 0; i < total; i++) {
         camera.setViewOffset(segments, segments, i % segments, Math.floor(i / segments), 1, 1)

@@ -21,6 +21,7 @@
   height: 20px;
   width: 20px;
   border-radius: 15px;
+  margin-right: 10px;
 }
 
 .pickerContainer {
@@ -28,6 +29,23 @@
   left: 5px;
   top: 30px;
   z-index: 3;
+}
 
+.iconPanel {
+  display: flex;
+  align-items: center;
+}
+
+.random {
+  display: flex;
+  align-items: center;
+  color: white;
+  cursor: pointer;
+  margin-right: 5px;
+  transition: 0.1s all;
+}
+
+.random:hover {
+  color: orangered;
 }
 

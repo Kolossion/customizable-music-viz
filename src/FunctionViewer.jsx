@@ -71,6 +71,22 @@ export default function FunctionViewer(props) {
 
   const CanvasFunc = canvasState === "3D" ? Canvas3D : Canvas2D
 
+  const genRandomColors = (e) => {
+    const randomPosColor = { 
+      r: Math.random() * 256,
+      g: Math.random() * 256,
+      b: Math.random() * 256
+    }
+    const randomNegColor = { 
+      r: Math.random() * 256,
+      g: Math.random() * 256,
+      b: Math.random() * 256
+    }
+
+    _setPosColorVal(randomPosColor)
+    _setNegColorVal(randomNegColor)
+  }
+
   return (
     <>
       <div className={"sidebar " + (!sidebarOpen ? "hidden" : "")}>
@@ -96,6 +112,7 @@ export default function FunctionViewer(props) {
           <>
             <label for="screenshot-size">Screenshot Size</label>
             <input id="screenshot-size" type="number" value={screenshotSize} onChange={(e) => setScreenshotSize(e.target.value)} />
+            <button onClick={genRandomColors}>Random Colors!</button>
             <ColorPicker
               value={posColorVal}
               onChange={(e) => setPosColorVal(e.rgb)}
