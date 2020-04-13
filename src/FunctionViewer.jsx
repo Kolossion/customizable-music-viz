@@ -1,25 +1,37 @@
-import React, { useRef, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import Slider from 'rc-slider'
 import Stats from 'three/examples/jsm/libs/stats.module'
-import { SketchPicker } from 'react-color'
 import { DEFAULT_FUNC, DEFAULT_F} from './shaders'
 import { ArrowLeft, ArrowRight } from 'react-feather'
 import Canvas3D from './Canvas3D'
 import Canvas2D from './Canvas2D'
 import Tabs from './components/Tabs'
-import { rgbToCSS } from './lib/helpers'
+import Color from 'color'
 import 'rc-slider/assets/index.css'
 import ColorPicker from './components/ColorPicker';
+import pick from 'lodash/pick'
 
 export default function FunctionViewer(props) {
   // const { gl } = useThree() 
-  const [shaderFunc, setShaderFunc] = useState(DEFAULT_FUNC)
+  const [shaderFunc, setShaderFunc] = useState(
+      localStorage.getItem('shaderFunc') ||
+      DEFAULT_FUNC
+    )
+  const [f, setF] = useState(
+      localStorage.getItem('f') ||
+      DEFAULT_F
+    )
   const [canvasState, setCanvasState] = useState("2D")
   const [screenshotSize, setScreenshotSize] = useState(5000)
-  const [posColorVal, setPosColorVal] = useState({r: 255, g: 255, b: 255, a: 1})
-  const [negColorVal, setNegColorVal] = useState({r: 0, g: 0, b: 0, a: 1})
-  const [f, setF] = useState(DEFAULT_F)
   const [highPerformance, setHighPerformance] = useState(true)
+  const [posColorVal, _setPosColorVal] = useState(
+      Color(localStorage.getItem('posColor')).object() ||
+      { r: 255, g: 255, b: 255 }
+    )
+  const [negColorVal, _setNegColorVal] = useState(
+      Color(localStorage.getItem('negColor')).object() ||
+      { r: 0, g: 0, b: 0 }
+    )
   const [numParticles, setNumParticles] = useState(1000)
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
@@ -29,11 +41,26 @@ export default function FunctionViewer(props) {
   stats.dom.style.top = 'calc(100% - 57px)'
   document.body.appendChild(stats.dom)
 
+  const setPosColorVal = (rgbColor) => {
+    const color = pick(rgbColor, ['r', 'g', 'b'])
+    localStorage.setItem('posColor', Color(color).rgb().string())
+    _setPosColorVal(rgbColor)
+  }
+
+  const setNegColorVal = (rgbColor) => {
+    const color = pick(rgbColor, ['r', 'g', 'b'])
+    localStorage.setItem('negColor', Color(color).rgb().string())
+    _setNegColorVal(rgbColor)
+  }
+
+
   const setShaderFuncText = (e) => {
+    localStorage.setItem('shaderFunc', e.target.value)
     setShaderFunc(e.target.value)
   }
 
   const setFText = (e) => {
+    localStorage.setItem('f', e.target.value)
     setF(e.target.value)
   }
 

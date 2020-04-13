@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { SketchPicker } from 'react-color'
 import ClickOutside from 'react-click-outside'
 import styles from './ColorPicker.module.css'
-import { rgbToCSS } from '../../lib/helpers'
 import Color from 'color'
 
 function ColorPicker(props) {
