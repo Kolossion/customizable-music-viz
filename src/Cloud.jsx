@@ -12,6 +12,9 @@ function createTranslateArray(shape, size) {
 
     if (shape === 'cloud')
       array[i*3+1] = Math.random() * 40 - 20;
+
+    if (Math.sqrt(array[i*3]**2 + array[i*3+1]**2 + array[i*3+2]**2) > 20)
+      i--;
   }
 
   return array;
@@ -23,7 +26,7 @@ export default function Cloud(props) {
   const [amplitudeArray, analyserNode, audioTexture] = useMemo((fftSize = props.fft) => {
     const analyserNode = props.audioCtx.createAnalyser();
     analyserNode.fftSize = fftSize;
-    // analyserNode.fftSize = Math.pow(2, 14);
+    analyserNode.smoothingTimeConstant = 0.5;
     props.track.connect(analyserNode);
     const amplitudeArray = new Uint8Array(analyserNode.frequencyBinCount);
     const texture = new THREE.DataTexture(amplitudeArray, fftSize / 2, 1, THREE.LuminanceFormat );
@@ -57,6 +60,7 @@ export default function Cloud(props) {
       <instancedBufferGeometry attach="geometry" index={indexes} attributes={attributes} maxInstancedCount={props.particleCount} />
       <rawShaderMaterial attach="material" args={[{
         vertexShader: props.v_shader,
+        blending: THREE.CustomBlending,
         fragmentShader: props.f_shader,
         uniforms: {
           time: {value: 0.0},

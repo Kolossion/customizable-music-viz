@@ -18,12 +18,19 @@ export default function Plane(props) {
 
   useEffect(() => {
     const keyDownHandler = (e) => {
-      if (e.key !== "R") return
-
-      if (false) {
-        return screenshotInDataUrl()
-      } else {
-        return screenshotInZip()
+      if (e.key == "H") {
+        let display = Math.random() < 0.5 ? "none" : "inline"
+        for (let el of document.querySelectorAll('.removable')) {
+          console.log(el)
+          el.style.diplay = display
+        }
+      }
+      if (e.key == "R") {
+        if (false) {
+          return screenshotInDataUrl()
+        } else {
+          return screenshotInZip()
+        }
       }
     }
 
@@ -98,6 +105,7 @@ export default function Plane(props) {
   const [amplitudeArray, analyserNode, audioTexture] = useMemo((fftSize = Math.pow(2, 14)) => {
     const analyserNode = props.audioCtx.createAnalyser();
     analyserNode.fftSize = fftSize;
+    analyserNode.smoothingTimeConstant = 0;
     props.track.connect(analyserNode);
     const amplitudeArray = new Uint8Array(analyserNode.frequencyBinCount);
     const texture = new THREE.DataTexture(amplitudeArray, fftSize / 2, 1, THREE.LuminanceFormat );

@@ -19,8 +19,8 @@ export const vertex_shader = (f=DEFAULT_F, func=DEFAULT_FUNC) => (
   varying float vRho;
   void main() {
     float x = translate.x;
-    float y = translate.y;
-    float z = translate.z;
+    float y = translate.z;
+    float z = translate.y;
     float r = sqrt(x * x + y * y);
     float rho = sqrt(r * r + z * z);
     float theta = atan(x, y);
@@ -90,6 +90,26 @@ export const vertex_shader_plain = () => (
   uniform float time;
   uniform sampler2D tAudioData;
   varying vec2 vUv;
+
+  float a(float x) {
+    return sin(x);
+  }
+
+  float b(float x) {
+    return cos(x) + x;
+  }
+
+  float c(float x) {
+    return tan(x);
+  }
+
+  float d(float x) {
+    return pow(x, 2.);
+  }
+
+  float e(float x) {
+    return x + 4.;
+  }
 
   void main() {
     float x = vUv.x;

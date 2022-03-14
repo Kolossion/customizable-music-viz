@@ -39,6 +39,7 @@ export default function FunctionViewer(props) {
   stats.dom.style.position = 'absolute'
   stats.dom.style.left = '10px'
   stats.dom.style.top = 'calc(100% - 57px)'
+  stats.dom.className += ' removable'
   document.body.appendChild(stats.dom)
 
   const setPosColorVal = (rgbColor) => {
@@ -92,7 +93,7 @@ export default function FunctionViewer(props) {
       <div className={"sidebar " + (!sidebarOpen ? "hidden" : "")}>
         <h2>Customize Visualizer</h2>
         <Tabs highlightColor={posColorVal} onChange={setCanvasState} labels={['3D', '2D']} value={canvasState} />
-        <div className="drawer-button" onClick={() => setSidebarOpen(!sidebarOpen)}>
+        <div className="removable drawer-button" onClick={() => setSidebarOpen(!sidebarOpen)}>
           { sidebarOpen ?
             <ArrowRight color="#ffffff"/> :
             <ArrowLeft color="#ffffff"/>

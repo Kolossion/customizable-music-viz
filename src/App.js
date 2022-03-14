@@ -7,11 +7,14 @@ function App(props) {
   const audioCtx = useRef(new AudioContext())
   const [ track, setTrack ] = useState(null)
 
+  const handleSuccess = function(stream) {
+    setTrack(audioCtx.current.createMediaStreamSource(stream))
+  }
+
   useEffect(() => {
     // console.log("AUDIO ELEMENT", audioRef.current)
-    const temp_track = audioCtx.current.createMediaElementSource(audioRef.current)
-    temp_track.connect(audioCtx.current.destination)
-    setTrack(temp_track)
+    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+      .then(handleSuccess);
   }, [])
 
   return (
