@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Slider from 'rc-slider'
-import Stats from 'three/examples/jsm/libs/stats.module'
-import { DEFAULT_FUNC, DEFAULT_F} from './shaders'
+import { DEFAULT_FUNC, DEFAULT_F, DEFAULT_CHANGE_FUNC } from './shaders'
 import { ArrowLeft, ArrowRight } from 'react-feather'
 import Canvas3D from './Canvas3D'
 import Canvas2D from './Canvas2D'
@@ -17,11 +16,16 @@ export default function FunctionViewer(props) {
       localStorage.getItem('shaderFunc') ||
       DEFAULT_FUNC
     )
+  const [lastShaderFunc, setLastShaderFunc] = useState("0")
   const [f, setF] = useState(
       localStorage.getItem('f') ||
       DEFAULT_F
     )
-  const [canvasState, setCanvasState] = useState("2D")
+  const [lastF, setLastF] = useState("0")
+  const [changeFunc, setChangeFunc] = useState(
+      localStorage.getItem('changeFunc') ||
+      DEFAULT_CHANGE_FUNC)
+  const [canvas, setCanvas] = useState(localStorage.getItem('canvas') || "2D")
   const [screenshotSize, setScreenshotSize] = useState(5000)
   const [highPerformance, setHighPerformance] = useState(true)
   const [posColorVal, _setPosColorVal] = useState(
@@ -33,14 +37,15 @@ export default function FunctionViewer(props) {
       { r: 0, g: 0, b: 0 }
     )
   const [numParticles, setNumParticles] = useState(1000)
+  const [fftSize, setFftSize] = useState(localStorage.getItem('fftSize') || 8)
+  const [smoothingTimeConstant, setSmoothingTimeConstant] = useState(localStorage.getItem('smoothing') || 0.5)
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [autoRotateSpeed, setAutoRotateSpeed] = useState(0)
 
-  const stats = new Stats();
-  stats.dom.style.position = 'absolute'
-  stats.dom.style.left = '10px'
-  stats.dom.style.top = 'calc(100% - 57px)'
-  stats.dom.className += ' removable'
-  document.body.appendChild(stats.dom)
+  const setCanvasState = (state) => {
+    localStorage.setItem('canvas', state)
+    setCanvas(state)
+  }
 
   const setPosColorVal = (rgbColor) => {
     const color = pick(rgbColor, ['r', 'g', 'b'])
@@ -54,15 +59,42 @@ export default function FunctionViewer(props) {
     _setNegColorVal(rgbColor)
   }
 
-
-  const setShaderFuncText = (e) => {
-    localStorage.setItem('shaderFunc', e.target.value)
-    setShaderFunc(e.target.value)
+  const setFText = () => {
+    const text = document.getElementById('f-input').value
+    localStorage.setItem('f', text)
+    setLastF(f)
+    setF(text)
   }
 
-  const setFText = (e) => {
-    localStorage.setItem('f', e.target.value)
-    setF(e.target.value)
+  const setFTextOnEnter = (e) => {
+    if (e.keyCode == 13) {
+      setFText()
+    }
+  }
+
+  const setShaderFuncText = () => {
+    const text = document.getElementById('fn-input').value
+    localStorage.setItem('shaderFunc', text)
+    setLastShaderFunc(shaderFunc)
+    setShaderFunc(text)
+  }
+
+  const setShaderFuncTextOnEnter = (e) => {
+    if (e.keyCode == 13) {
+      setShaderFuncText()
+    }
+  }
+
+  const setChangeFuncText = () => {
+    const text = document.getElementById('change-input').value
+    localStorage.setItem('changeFunc', text)
+    setChangeFunc(text)
+  }
+
+  const setChangeFuncTextOnEnter = (e) => {
+    if (e.keyCode == 13) {
+      setChangeFuncText()
+    }
   }
 
   const changeParticleCount = (val) => {
@@ -70,7 +102,17 @@ export default function FunctionViewer(props) {
     setNumParticles(Math.round(Math.pow(10_000_000, val)))
   }
 
-  const CanvasFunc = canvasState === "3D" ? Canvas3D : Canvas2D
+  const changeFftSize = (val) => {
+    localStorage.setItem('fftSize', val)
+    setFftSize(val)
+  }
+
+  const changeSmoothingTimeConstant = (val) => {
+    localStorage.setItem('smoothing', val)
+    setSmoothingTimeConstant(val)
+  }
+
+  const CanvasFunc = canvas === "3D" ? Canvas3D : Canvas2D
 
   const genRandomColors = (e) => {
     const randomPosColor = { 
@@ -92,7 +134,7 @@ export default function FunctionViewer(props) {
     <>
       <div className={"sidebar " + (!sidebarOpen ? "hidden" : "")}>
         <h2>Customize Visualizer</h2>
-        <Tabs highlightColor={posColorVal} onChange={setCanvasState} labels={['3D', '2D']} value={canvasState} />
+        <Tabs highlightColor={posColorVal} onChange={setCanvasState} labels={['3D', '2D']} value={canvas} />
         <div className="removable drawer-button" onClick={() => setSidebarOpen(!sidebarOpen)}>
           { sidebarOpen ?
             <ArrowRight color="#ffffff"/> :
@@ -100,14 +142,28 @@ export default function FunctionViewer(props) {
           }
         </div>
         <label for="f-input">Value of <i>f</i></label>
-        <input id="f-input" name="f-input" type="text" onChange={setFText} value={f} />
+        <input id="f-input" name="f-input" type="text" onKeyUp={setFTextOnEnter} defaultValue={f} />
         <label for="fn-input">Shader function</label>
-        <input id="fn-input" name="fn-input" type="text" onChange={setShaderFuncText} value={shaderFunc} />
-        { canvasState === "3D" ? 
+        <input id="fn-input" name="fn-input" type="text" onKeyUp={setShaderFuncTextOnEnter} defaultValue={shaderFunc} />
+        <label for="change-input">Change function</label>
+        <input id="change-input" name="change-input" type="text" onKeyUp={setChangeFuncTextOnEnter} defaultValue={changeFunc} />
+        <label for="fft-size">FFT bins: 2**{fftSize}</label>
+        <div style={{ width: '100%', padding: '10px'}}>
+          <Slider id="fft-size" name="fft-size" onChange={changeFftSize} min={5} max={14} step={1} value={fftSize}/>
+        </div>
+        <label for="smoothing-constant">Smoothing Time Constant: {smoothingTimeConstant}</label>
+        <div style={{ width: '100%', padding: '10px'}}>
+          <Slider id="smoothing-constant" name="smoothing-constant" onChange={changeSmoothingTimeConstant} min={0.} max={1} step={1/1000} value={smoothingTimeConstant}/>
+        </div>
+        { canvas === "3D" ? 
           <>
             <label for="num-particles">Number of Particles: {numParticles}</label>
             <div style={{ width: '100%', padding: '10px'}}>
               <Slider id="num-particles" name="num-particles" onChange={changeParticleCount} min={0.5} max={1} step={1/1000}/>
+            </div>
+            <label for="auto-rotate">Auto Rotate Speed</label>
+            <div style={{ width: '100%', padding: '10px'}}>
+              <Slider id="auto-rotate" name="auto-rotate" onChange={setAutoRotateSpeed} min={0} max={4} step={1/1000} value={autoRotateSpeed} />
             </div>
           </> :
           <>
@@ -132,16 +188,21 @@ export default function FunctionViewer(props) {
       </div>
       <CanvasFunc
         {...props}
-        f={f}
         colors={{
           posColor: posColorVal,
           negColor: negColorVal
         }}
-        stats={stats}
         screenshotSize={screenshotSize}
+        f={f}
+        lastF={lastF}
         shaderFunc={shaderFunc}
+        lastShaderFunc={lastShaderFunc}
+        changeFunc={changeFunc}
         numParticles={numParticles}
+        fftSize={2**fftSize}
+        smoothingTimeConstant={smoothingTimeConstant}
         highPerformance={highPerformance}
+        autoRotateSpeed={autoRotateSpeed}
       />
     </>
   )

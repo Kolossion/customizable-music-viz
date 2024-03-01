@@ -98,14 +98,10 @@ export default function Plane(props) {
     }
   }, [camera, gl, props, scene, zoom])
 
-  useFrame((state) => {
-    props.stats.update()
-  })
-
   const [amplitudeArray, analyserNode, audioTexture] = useMemo((fftSize = Math.pow(2, 14)) => {
     const analyserNode = props.audioCtx.createAnalyser();
     analyserNode.fftSize = fftSize;
-    analyserNode.smoothingTimeConstant = 0;
+    analyserNode.smoothingTimeConstant = 0.8;
     props.track.connect(analyserNode);
     const amplitudeArray = new Uint8Array(analyserNode.frequencyBinCount);
     const texture = new THREE.DataTexture(amplitudeArray, fftSize / 2, 1, THREE.LuminanceFormat );

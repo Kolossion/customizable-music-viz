@@ -6,7 +6,7 @@ import ViewControls from './ViewControls'
 
 export default function Canvas3D(props) {
 
-  const v_shader = useMemo(() => ( vertex_shader(props.f, props.shaderFunc) ), [props.f, props.shaderFunc])
+  const v_shader = useMemo(() => ( vertex_shader(props.f, props.lastF, props.shaderFunc, props.lastShaderFunc, props.changeFunc) ), [props.f, props.shaderunc, props.changeFunc])
 
   return <Canvas 
     style={{ height: '100vh' }}
@@ -17,10 +17,11 @@ export default function Canvas3D(props) {
             audioCtx={props.audioCtx}
             track={props.track}
             particleCount={props.numParticles}
-            fft={Math.pow(2, 14)}
+            fftSize={props.fftSize}
+            smoothingTimeConstant={props.smoothingTimeConstant}
             v_shader={v_shader}
             f_shader={fragment_shader()}
     />
-    <ViewControls />
+    <ViewControls autoRotateSpeed={props.autoRotateSpeed} />
   </Canvas>
 }
