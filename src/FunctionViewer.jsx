@@ -141,33 +141,33 @@ export default function FunctionViewer(props) {
             <ArrowLeft color="#ffffff"/>
           }
         </div>
-        <label for="f-input">Value of <i>f</i></label>
+        <label htmlFor="f-input">Value of <i>f</i></label>
         <input id="f-input" name="f-input" type="text" onKeyUp={setFTextOnEnter} defaultValue={f} />
-        <label for="fn-input">Shader function</label>
+        <label htmlFor="fn-input">Shader function</label>
         <input id="fn-input" name="fn-input" type="text" onKeyUp={setShaderFuncTextOnEnter} defaultValue={shaderFunc} />
-        <label for="change-input">Change function</label>
+        <label htmlFor="change-input">Change function</label>
         <input id="change-input" name="change-input" type="text" onKeyUp={setChangeFuncTextOnEnter} defaultValue={changeFunc} />
-        <label for="fft-size">FFT bins: 2**{fftSize}</label>
+        <label htmlFor="fft-size">FFT bins: 2**{fftSize}</label>
         <div style={{ width: '100%', padding: '10px'}}>
           <Slider id="fft-size" name="fft-size" onChange={changeFftSize} min={5} max={14} step={1} value={fftSize}/>
         </div>
-        <label for="smoothing-constant">Smoothing Time Constant: {smoothingTimeConstant}</label>
+        <label htmlFor="smoothing-constant">Smoothing Time Constant: {smoothingTimeConstant}</label>
         <div style={{ width: '100%', padding: '10px'}}>
           <Slider id="smoothing-constant" name="smoothing-constant" onChange={changeSmoothingTimeConstant} min={0.} max={1} step={1/1000} value={smoothingTimeConstant}/>
         </div>
         { canvas === "3D" ? 
           <>
-            <label for="num-particles">Number of Particles: {numParticles}</label>
+            <label htmlFor="num-particles">Number of Particles: {numParticles}</label>
             <div style={{ width: '100%', padding: '10px'}}>
               <Slider id="num-particles" name="num-particles" onChange={changeParticleCount} min={0.5} max={1} step={1/1000}/>
             </div>
-            <label for="auto-rotate">Auto Rotate Speed</label>
+            <label htmlFor="auto-rotate">Auto Rotate Speed</label>
             <div style={{ width: '100%', padding: '10px'}}>
               <Slider id="auto-rotate" name="auto-rotate" onChange={setAutoRotateSpeed} min={0} max={4} step={1/1000} value={autoRotateSpeed} />
             </div>
           </> :
           <>
-            <label for="screenshot-size">Screenshot Size</label>
+            <label htmlFor="screenshot-size">Screenshot Size</label>
             <input id="screenshot-size" type="number" value={screenshotSize} onChange={(e) => setScreenshotSize(e.target.value)} />
             <button onClick={genRandomColors}>Random Colors!</button>
             <ColorPicker
@@ -183,7 +183,7 @@ export default function FunctionViewer(props) {
             <p>Press <b>Shift + R</b> to capture the canvas as an image.</p>
           </>
         }
-        {/* <label for="canvas-switch">3D Canvas: </label>
+        {/* <label htmlFor="canvas-switch">3D Canvas: </label>
         <input id="canvas-switch" checked={show3D} type="checkbox" onChange={setShow3DToggle} /> */}
       </div>
       <CanvasFunc

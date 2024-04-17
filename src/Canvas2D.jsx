@@ -12,8 +12,8 @@ export default function Canvas2D(props) {
             orthographic={ true }
             style={{ height: '100vh' }}
             gl={{powerPreference: props.highPerformance ? 'high-performance' : 'default'}}
-            gl2 = { true }
-            antialias = { true }
+            gl2 = { "true" }
+            antialias = { "true" }
           >
       <Plane {...props} />
     </Canvas>

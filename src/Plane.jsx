@@ -121,9 +121,7 @@ export default function Plane(props) {
   }
 
   return (
-    <mesh
-      ref={mesh}
-    >
+    <mesh ref={mesh} >
       <planeGeometry attach="geometry" />
       <shaderMaterial attach="material" args={[{
         vertexShader: vertex_shader_plain(),

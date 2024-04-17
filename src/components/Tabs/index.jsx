@@ -23,6 +23,7 @@ function Tabs(props) {
         style={{ backgroundColor: isLabel ? highlightColor.rgb().string() : '#555555' }}
         className={[styles.tab, (isLabel ? styles.active : "")].join(' ')}
         onClick={tabClicked(label)}
+        key={label}
       >
         <span style={{color: isLabel && isLightBG ? '#333' : '#FFF'}}>
           {label}

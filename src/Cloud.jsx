@@ -41,6 +41,7 @@ export default function Cloud(props) {
     const analyserNode = props.audioCtx.createAnalyser();
     analyserNode.fftSize = fftSize;
     analyserNode.smoothingTimeConstant = props.smoothingTimeConstant;
+    console.log("I have this many particles counted: " + props.particleCount)
     props.track.connect(analyserNode);
     const amplitudeArray = new Uint8Array(analyserNode.frequencyBinCount);
     const texture = new THREE.DataTexture(amplitudeArray, fftSize / 2, 1, THREE.LuminanceFormat );
@@ -50,10 +51,10 @@ export default function Cloud(props) {
 
 
   const circleTexture = useMemo(() => new THREE.TextureLoader().load('https://i.postimg.cc/W1CMqD6N/circle.png'), []);
-  const indexes = useMemo(() => new THREE.CircleBufferGeometry(1, 6).index);
+  const indexes = useMemo(() => new THREE.CircleGeometry(1, 6).index);
 
   const attributes = useMemo((shape = props.shape, count = props.particleCount) => {
-    const newAttributes = new THREE.CircleBufferGeometry(1, 6).attributes;
+    const newAttributes = new THREE.CircleGeometry(1, 6).attributes;
     const translateArray = createTranslateArray(shape, count);
     const translateAttr  = new THREE.InstancedBufferAttribute(translateArray, 3);
     newAttributes.translate = translateAttr
